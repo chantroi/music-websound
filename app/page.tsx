@@ -30,9 +30,9 @@ export default function Home() {
                 className="bg-cyan-500 dark:bg-cyan-400 w-1/2 h-2"
                 role="progressbar"
                 aria-label="music progress"
-                aria-valuenow={1456}  {/* Chuyển đổi từ chuỗi thành số */}
-                aria-valuemin={0}     {/* Chuyển đổi từ chuỗi thành số */}
-                aria-valuemax={4550}  {/* Chuyển đổi từ chuỗi thành số */}
+                aria-valuenow={1456}
+                aria-valuemin={0}
+                aria-valuemax={4550}
               ></div>
             </div>
             <div className="ring-cyan-500 dark:ring-cyan-400 ring-2 absolute left-1/2 top-1/2 w-4 h-4 -mt-2 -ml-2 flex items-center justify-center bg-white rounded-full shadow">
