@@ -1,6 +1,88 @@
-export default function Home() {
+"use client";
+
+import React, { useState, useRef, useEffect } from "react";
+
+export default function AudioPlayer() {
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [error, setError] = useState(null);
+  const audioRef = useRef(null);
+
+  const audioSrc =
+    "https://a128-z3.zmdcdn.me/960cf0da44e6926469c8ca4c7ba7184f?authen=exp=1725251872~acl=/960cf0da44e6926469c8ca4c7ba7184f/*~hmac=413fa23443ad832bf6904be4daab754f";
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const setAudioData = () => {
+      setDuration(audio.duration);
+    };
+
+    const setAudioTime = () => {
+      setCurrentTime(audio.currentTime);
+    };
+
+    const handleError = (e) => {
+      setError("Error loading audio: " + e.message);
+    };
+
+    // Set up event listeners
+    audio.addEventListener("loadedmetadata", setAudioData);
+    audio.addEventListener("timeupdate", setAudioTime);
+    audio.addEventListener("error", handleError);
+
+    // Clean up event listeners
+    return () => {
+      audio.removeEventListener("loadedmetadata", setAudioData);
+      audio.removeEventListener("timeupdate", setAudioTime);
+      audio.removeEventListener("error", handleError);
+    };
+  }, []);
+
+  const togglePlayPause = () => {
+    if (!audioRef.current) return;
+
+    if (isPlaying) {
+      audioRef.current.pause();
+    } else {
+      audioRef.current
+        .play()
+        .catch((e) => setError("Error playing audio: " + e.message));
+    }
+    setIsPlaying(!isPlaying);
+  };
+
+  const formatTime = (time) => {
+    if (!isFinite(time)) return "0:00";
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+  };
+
+  const seek = (e) => {
+    if (!audioRef.current) return;
+
+    const seekTime = (e.nativeEvent.offsetX / e.target.offsetWidth) * duration;
+    audioRef.current.currentTime = seekTime;
+    setCurrentTime(seekTime);
+  };
+
+  const skip = (seconds) => {
+    if (!audioRef.current) return;
+
+    const newTime = currentTime + seconds;
+    audioRef.current.currentTime = newTime;
+    setCurrentTime(newTime);
+  };
+
+  if (error) {
+    return <div className="text-red-500">{error}</div>;
+  }
+
   return (
     <>
+      <audio ref={audioRef} src={audioSrc} />
       <div className="bg-white border-slate-100 dark:bg-slate-800 dark:border-slate-500 border-b rounded-t-xl p-4 pb-6 sm:p-10 sm:pb-8 lg:p-6 xl:p-10 xl:pb-8 space-y-6 sm:space-y-8 lg:space-y-6 xl:space-y-8">
         <div className="flex items-center space-x-4">
           <img
@@ -16,7 +98,7 @@ export default function Home() {
               <abbr title="Episode">Ep.</abbr> 128
             </p>
             <h2 className="text-slate-500 dark:text-slate-400 text-sm leading-6 truncate">
-              Scaling CSS at Heroku with Utility classNamees
+              Scaling CSS at Heroku with Utility Classes
             </h2>
             <p className="text-slate-900 dark:text-slate-50 text-lg">
               Full Stack Radio
@@ -27,21 +109,24 @@ export default function Home() {
           <div className="relative">
             <div className="bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
               <div
-                className="bg-cyan-500 dark:bg-cyan-400 w-1/2 h-2"
+                className="bg-cyan-500 dark:bg-cyan-400 h-2 cursor-pointer"
+                style={{ width: `${(currentTime / duration) * 100 || 0}%` }}
+                onClick={seek}
                 role="progressbar"
                 aria-label="music progress"
-                aria-valuenow={1456}
+                aria-valuenow={currentTime}
                 aria-valuemin={0}
-                aria-valuemax={4550}
+                aria-valuemax={duration}
               ></div>
-            </div>
-            <div className="ring-cyan-500 dark:ring-cyan-400 ring-2 absolute left-1/2 top-1/2 w-4 h-4 -mt-2 -ml-2 flex items-center justify-center bg-white rounded-full shadow">
-              <div className="w-1.5 h-1.5 bg-cyan-500 dark:bg-cyan-400 rounded-full ring-1 ring-inset ring-slate-900/5"></div>
             </div>
           </div>
           <div className="flex justify-between text-sm leading-6 font-medium tabular-nums">
-            <div className="text-cyan-500 dark:text-slate-100">24:16</div>
-            <div className="text-slate-500 dark:text-slate-400">75:50</div>
+            <div className="text-cyan-500 dark:text-slate-100">
+              {formatTime(currentTime)}
+            </div>
+            <div className="text-slate-500 dark:text-slate-400">
+              {formatTime(duration)}
+            </div>
           </div>
         </div>
       </div>
@@ -82,7 +167,11 @@ export default function Home() {
               />
             </svg>
           </button>
-          <button type="button" aria-label="Rewind 10 seconds">
+          <button
+            type="button"
+            aria-label="Rewind 10 seconds"
+            onClick={() => skip(-10)}
+          >
             <svg width="24" height="24" fill="none">
               <path
                 d="M6.492 16.95c2.861 2.733 7.5 2.733 10.362 0 2.861-2.734 2.861-7.166 0-9.9-2.862-2.733-7.501-2.733-10.362 0A7.096 7.096 0 0 0 5.5 8.226"
@@ -104,15 +193,26 @@ export default function Home() {
         <button
           type="button"
           className="bg-white text-slate-900 dark:bg-slate-100 dark:text-slate-700 flex-none -my-2 mx-auto w-20 h-20 rounded-full ring-1 ring-slate-900/5 shadow-md flex items-center justify-center"
-          aria-label="Pause"
+          aria-label={isPlaying ? "Pause" : "Play"}
+          onClick={togglePlayPause}
         >
-          <svg width="30" height="32" fill="currentColor">
-            <rect x="6" y="4" width="4" height="24" rx="2" />
-            <rect x="20" y="4" width="4" height="24" rx="2" />
-          </svg>
+          {isPlaying ? (
+            <svg width="30" height="32" fill="currentColor">
+              <rect x="6" y="4" width="4" height="24" rx="2" />
+              <rect x="20" y="4" width="4" height="24" rx="2" />
+            </svg>
+          ) : (
+            <svg width="30" height="32" fill="currentColor">
+              <path d="M10 4v24l16-12z" />
+            </svg>
+          )}
         </button>
         <div className="flex-auto flex items-center justify-evenly">
-          <button type="button" aria-label="Skip 10 seconds">
+          <button
+            type="button"
+            aria-label="Skip 10 seconds"
+            onClick={() => skip(10)}
+          >
             <svg width="24" height="24" fill="none">
               <path
                 d="M17.509 16.95c-2.862 2.733-7.501 2.733-10.363 0-2.861-2.734-2.861-7.166 0-9.9 2.862-2.733 7.501-2.733 10.363 0 .38.365.711.759.991 1.176"
