@@ -1,5 +1,5 @@
-// components/MusicPlayer.js
-import { useState, useRef } from 'react';
+"use client";
+import { useState, useRef } from "react";
 
 const Home = () => {
   const audioRef = useRef(null);
@@ -48,9 +48,16 @@ const Home = () => {
         <h2 className="text-lg font-semibold">{tracks[currentTrack].title}</h2>
         <p className="text-sm text-gray-600">{tracks[currentTrack].artist}</p>
       </div>
-      <audio ref={audioRef} src={tracks[currentTrack].src} onEnded={handleNext} />
+      <audio
+        ref={audioRef}
+        src={tracks[currentTrack].src}
+        onEnded={handleNext}
+      />
       <div className="flex items-center justify-center space-x-4 mt-4">
-        <button onClick={handlePrevious} className="p-2 bg-gray-300 rounded-full">
+        <button
+          onClick={handlePrevious}
+          className="p-2 bg-gray-300 rounded-full"
+        >
           ⏮️
         </button>
         <button
