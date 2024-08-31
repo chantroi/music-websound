@@ -59,7 +59,10 @@ def get_album_handler():
     else:
         album = request.args.get("album")
     db = Db()
-    audios = [item.audio for item in db.get_album(album)]
+    if album:
+        audios = [item.audio for item in db.get_album(album)]
+    else:
+        audios = [item.audio for item in db.get_album()]
     return jsonify(audios)
 
 

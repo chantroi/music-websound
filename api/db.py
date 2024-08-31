@@ -43,7 +43,9 @@ class Db:
         self.session.add(Album(album=album, audio=audio))
         self.session.commit()
 
-    def get_album(self, album):
+    def get_album(self, album=None):
+        if not album:
+            return self.session.query(Album).all()
         return self.session.query(Album).filter_by(album=album).all()
 
     def get_audio(self, title):
