@@ -26,7 +26,9 @@ class Album(Base):
 class Db:
     def __init__(self):
         db_url = os.getenv("DB_URL")
-        self.engine = create_engine(db_url)
+        self.engine = create_engine(
+            db_url, connect_args={"check_same_thread": False}, echo=True
+        )
         Base.metadata.create_all(self.engine)
         self.session = sessionmaker(bind=self.engine)()
 
