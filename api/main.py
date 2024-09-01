@@ -63,7 +63,7 @@ def get_lrc_handler():
     return jsonify(lrc=lrc)
 
 
-@app.route("/get/list", methods=["POST", "GET"])
+@app.route("/list", methods=["POST", "GET"])
 def get_album_handler():
     if request.method == "POST":
         album = request.json.get("album")
@@ -78,7 +78,7 @@ def get_album_handler():
 
 
 @app.route("/save/zing", methods=["POST", "GET"])
-def get_zing_info_handler():
+def save_zingmp3():
     if request.method == "POST":
         link = request.json.get("url")
         album = request.json.get("album")
@@ -107,7 +107,7 @@ def get_zing_info_handler():
 
 
 @app.route("/save/youtube", methods=["POST", "GET"])
-def get_yt_info_handler():
+def save_youtube():
     if request.method == "POST":
         album = request.json.get("album")
         link = request.json.get("url")
