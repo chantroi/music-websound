@@ -41,7 +41,7 @@ class Db:
         self.session.commit()
 
     def add_album(self, album, audio):
-        self.session.add(Album(album=album, audio=audio))
+        self.session.merge(Album(album=album, audio=audio))
         self.session.commit()
 
     def get_album(self, album=None):

@@ -42,8 +42,14 @@ def get_info_handler():
     db = Db()
     audio = db.get_audio(title)
     fs = Storage()
-    audio["url"] = fs.get(title)
-    return jsonify(audio)
+    audio_url = fs.get(title)
+    return jsonify(
+        title=title,
+        url=audio_url,
+        cover=audio.cover,
+        artist=audio.artist,
+        lrc=audio.lrc,
+    )
 
 
 @app.route("/get/lrc", methods=["POST", "GET"])
@@ -57,7 +63,7 @@ def get_lrc_handler():
     return jsonify(lrc=lrc)
 
 
-@app.route("/get/album", methods=["POST", "GET"])
+@app.route("/get/list", methods=["POST", "GET"])
 def get_album_handler():
     if request.method == "POST":
         album = request.json.get("album")
@@ -71,7 +77,7 @@ def get_album_handler():
     return jsonify(audios)
 
 
-@app.route("/get/zing", methods=["POST", "GET"])
+@app.route("/save/zing", methods=["POST", "GET"])
 def get_zing_info_handler():
     if request.method == "POST":
         link = request.json.get("url")
@@ -79,11 +85,13 @@ def get_zing_info_handler():
     else:
         link = request.args.get("url")
         album = request.args.get("album")
+    if not album:
+        album = "default"
     info = get_info(link)
     title = info["title"]
     artist = info["artist"]
     url = info["url"]
-    cover = info["thumbnail"]
+    cover = info["thumbnails"][0]["url"]
     lrc = info["subtitles"]["origin"][0]["url"]
     db = Db()
     if not db.get_audio(title):
@@ -92,14 +100,13 @@ def get_zing_info_handler():
     if not fs.exists(title):
         fs.put(title, url)
         fs.put_lrc(title, lrc)
-    if not (item.audio == title for item in db.get_album(album)):
-        db.add_album(album, title)
+    db.add_album(album, title)
     return jsonify(
         platform="zingmp3", title=title, url=url, cover=cover, artist=artist, lrc=lrc
     )
 
 
-@app.route("/get/youtube", methods=["POST", "GET"])
+@app.route("/save/youtube", methods=["POST", "GET"])
 def get_yt_info_handler():
     if request.method == "POST":
         album = request.json.get("album")
@@ -107,6 +114,8 @@ def get_yt_info_handler():
     else:
         album = request.args.get("album")
         link = request.args.get("url")
+    if not album:
+        album = "default"
     info = get_info(link)
     url = info["url"]
     title = info["title"]
@@ -118,8 +127,7 @@ def get_yt_info_handler():
     fs = Storage()
     if not fs.exists(title):
         fs.put(title, url)
-    if not (item.audio == title for item in db.get_album(album)):
-        db.add_album(album, title)
+    db.add_album(album, title)
     return jsonify(
         platform="youtube", title=title, url=url, cover=cover, artist=artist, lrc=None
     )
