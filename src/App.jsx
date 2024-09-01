@@ -4,7 +4,7 @@ import NavItem from "./components/NavItem";
 import Audio from "./components/Audio";
 
 export default function App() {
-  const navItems = ["Albums", "Search", "Chat"];
+  const navItems = ["Danh Sách", "Bộ Sưu Tập", "Tìm Kiếm", "Trò Chuyện"];
   const [activeNavItem, setActiveNavItem] = useState(null);
   return (
     <div className="h-screen">
