@@ -1,15 +1,13 @@
-import os
 import requests
 from s3fs import S3FileSystem
+from env import S3_ENDPOINT, S3_KEY, S3_SECRET
 
 
 class Storage:
     def __init__(self):
-        ENDPOINT = os.getenv("ENDPOINT")
-        S3_KEY = os.getenv("S3_KEY")
-        S3_SECRET = os.getenv("S3_SECRET")
+
         self.fs = S3FileSystem(
-            endpoint_url=ENDPOINT, access_key=S3_KEY, secret_key=S3_SECRET
+            endpoint_url=S3_ENDPOINT, access_key=S3_KEY, secret_key=S3_SECRET
         )
 
     def put(self, title, url):

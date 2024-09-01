@@ -1,7 +1,7 @@
-import os
 from sqlalchemy import create_engine, Column, String, PrimaryKeyConstraint
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+from env import DB_URL
 
 Base = declarative_base()
 
@@ -25,9 +25,8 @@ class Album(Base):
 
 class Db:
     def __init__(self):
-        db_url = os.getenv("DB_URL")
         self.engine = create_engine(
-            db_url, connect_args={"check_same_thread": False}, echo=True
+            DB_URL, connect_args={"check_same_thread": False}, echo=True
         )
         Base.metadata.create_all(self.engine)
         self.session = sessionmaker(bind=self.engine)()
