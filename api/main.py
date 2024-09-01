@@ -34,7 +34,7 @@ def search_yt_handler():
 
 
 @app.route("/get", methods=["POST", "GET"])
-def get_info_handler():
+def get_music_handler():
     if request.method == "POST":
         title = request.json.get("title")
     else:
