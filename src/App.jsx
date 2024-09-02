@@ -64,6 +64,7 @@ export default function App() {
             <ListItem
               key={item.title}
               audio={item}
+              currentAudio={currentAudio}
               setCurrentAudio={setCurrentAudio}
             />
           ))}

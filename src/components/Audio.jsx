@@ -8,7 +8,7 @@ const formatTime = (time) => {
 };
 
 export default function Audio({
-  title = "Websound",
+  title = "Chưa có nguồn âm thanh",
   artist = "Undefined",
   coverArt = logoUrl,
   audioSrc = "",
