@@ -7,11 +7,11 @@ const formatTime = (time) => {
 };
 
 export default function Audio({
-  title = "Túy Âm",
-  artist = "Xesi, Masew, Nhật Nguyễn",
-  coverArt = "https://photo-resize-zmp3.zmdcdn.me/w94_r1x1_jpeg/covers/f/9/f9c0475ec02716554fba3f63e5b4ac37_1504991428.jpg",
-  audioSrc = "https://b0u2.or3.idrivee2-56.com/bosuutap/music/T%C3%BAy%20%C3%82m.mp3?AWSAccessKeyId=CUWBh6AGmbEWfWrNRDte&Signature=V74O5pUtJUzFrCY%2BKnAu4LQpT5M%3D&Expires=1725197020",
-  lyricsUrl = "https://static-zmp3.zmdcdn.me/lyrics/2017/09/18/3712553c6647e773a07064cae1818282_1076375432.lrc",
+  title = "Websound",
+  artist = "Undefined",
+  coverArt = "",
+  audioSrc = "",
+  lyricsUrl = "",
 }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -35,7 +35,6 @@ export default function Audio({
       });
     }
 
-    // Fetch and parse LRC file
     fetch(lyricsUrl)
       .then((response) => response.text())
       .then((text) => {
@@ -43,7 +42,7 @@ export default function Audio({
         setLyrics(parsedLyrics);
       })
       .catch((error) => console.error("Error fetching lyrics:", error));
-  }, [lyricsUrl]);
+  }, [lyricsUrl, isPlaying]);
 
   const parseLRC = (lrc) => {
     const lines = lrc.split("\n");
