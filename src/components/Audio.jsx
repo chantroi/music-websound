@@ -82,11 +82,18 @@ export default function Audio({
         lyric.time <= currentTime &&
         (!lyrics[index + 1] || lyrics[index + 1].time > currentTime)
     );
+
     if (index !== currentLyricIndex) {
       setCurrentLyricIndex(index);
+
+      // Nếu index hợp lệ và có lyricsRef.current
       if (lyricsRef.current && index !== -1) {
+        // Chỉ kéo lên trên, không kéo xuống
         const lyricElement = lyricsRef.current.children[index];
-        lyricElement.scrollIntoView({ behavior: "smooth", block: "center" });
+        lyricElement.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
       }
     }
   };
