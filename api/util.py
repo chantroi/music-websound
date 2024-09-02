@@ -1,4 +1,3 @@
-import json
 import requests
 import yt_dlp
 from youtube_search import YoutubeSearch

@@ -13,6 +13,33 @@ def index():
     return jsonify(status="ok", message="Websound Collection API")
 
 
+@app.route("/album/create", methods=["POST", "GET"])
+def create_album_handler():
+    if request.method == "POST":
+        title = request.json.get("title")
+        author = request.json.get("author")
+        des = request.json.get("des")
+    else:
+        title = request.args.get("title")
+        author = request.args.get("author")
+        des = request.args.get("des")
+    db = Db()
+    db.create_album(title, author, des)
+    db.close()
+    return jsonify(status="ok", message="Album created")
+
+
+@app.route("/albums", methods=["POST", "GET"])
+def list_albums_handler():
+    db = Db()
+    albums = db.list_albums()
+    albums = [
+        {"title": item.title, "author": item.author, "des": item.des} for item in albums
+    ]
+    db.close()
+    return jsonify(albums)
+
+
 @app.route("/search/zing", methods=["POST", "GET"])
 def search_zing_handler():
     if request.method == "POST":
@@ -43,6 +70,7 @@ def get_music_handler():
     audio = db.get_audio(title)
     fs = Storage()
     audio_url = fs.get(title)
+    db.close()
     return jsonify(
         title=title,
         url=audio_url,
@@ -63,6 +91,7 @@ def get_album_handler():
         audios = [item.audio for item in db.get_album(album)]
     else:
         audios = [item.audio for item in db.get_album()]
+    db.close()
     return jsonify(audios)
 
 
@@ -89,6 +118,7 @@ def save_zingmp3():
     if not fs.exists(title):
         fs.put(title, url)
     db.add_album(album, title)
+    db.close()
     return jsonify(
         platform="zingmp3", title=title, url=url, cover=cover, artist=artist, lrc=lrc
     )
@@ -116,6 +146,7 @@ def save_youtube():
     if not fs.exists(title):
         fs.put(title, url)
     db.add_album(album, title)
+    db.close()
     return jsonify(
         platform="youtube", title=title, url=url, cover=cover, artist=artist, lrc=None
     )

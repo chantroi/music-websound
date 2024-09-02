@@ -17,6 +17,13 @@ class Audio(Base):
 
 class Album(Base):
     __tablename__ = "album"
+    title = Column(String, primary_key=True)
+    author = Column(String)
+    des = Column(String, default="")
+
+
+class AlbumAudio(Base):
+    __tablename__ = "albumaudio"
     album = Column(String)
     audio = Column(String)
 
@@ -31,6 +38,19 @@ class Db:
         Base.metadata.create_all(self.engine)
         self.session = sessionmaker(bind=self.engine)()
 
+    def create_album(self, title, author, des):
+        if self.session.query(Album).count() != 0:
+            return False
+        if des:
+            self.session.add(Album(title=title, author=author, des=des))
+        else:
+            self.session.add(Album(title=title, author=author))
+        self.session.commit()
+        return True
+
+    def list_albums(self):
+        return self.session.query(Album).all()
+
     def add_audio(self, title, url, artist, cover, lrc=None):
         if lrc:
             self.session.add(
@@ -41,16 +61,21 @@ class Db:
         self.session.commit()
 
     def add_album(self, album, audio):
-        self.session.merge(Album(album=album, audio=audio))
+        self.session.merge(AlbumAudio(album=album, audio=audio))
         self.session.commit()
 
     def get_album(self, album=None):
+        if self.session.query(Album).count() == 0:
+            return None
         if not album:
-            return self.session.query(Album).all()
-        return self.session.query(Album).filter_by(album=album).all()
+            return self.session.query(AlbumAudio).all()
+        return self.session.query(AlbumAudio).filter_by(album=album).all()
 
     def get_audio(self, title):
         return self.session.query(Audio).filter_by(title=title).first()
 
     def get_audios(self):
         return self.session.query(Audio).all()
+    
+    def close(self):
+        self.session.close()

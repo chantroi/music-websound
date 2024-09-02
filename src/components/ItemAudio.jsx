@@ -1,4 +1,4 @@
-export default function ListItem({ audio, currentAudio, setCurrentAudio }) {
+export default function ItemAudio({ audio, currentAudio, setCurrentAudio }) {
   return (
     <article
       className="flex items-start space-x-6 p-6"

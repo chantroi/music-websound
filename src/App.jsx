@@ -3,7 +3,7 @@ import Nav from "./components/Nav";
 import NavItem from "./components/NavItem";
 import Audio from "./components/Audio";
 import List from "./components/List";
-import ListItem from "./components/ListItem";
+import ItemAudio from "./components/ItemAudio";
 import logoUrl from "./assets/react.svg";
 
 async function getAlbum(album = null) {
@@ -46,8 +46,9 @@ export default function App() {
       const audios = await getAlbum();
       setAudioList(audios);
     }
-
-    fetchData();
+    if (audioList.length === 0) {
+      fetchData();
+    }
   }, []);
 
   useEffect(() => {
@@ -105,7 +106,7 @@ export default function App() {
       {activeNavItem === "Danh Sách" && (
         <List>
           {audioList.map((item) => (
-            <ListItem
+            <ItemAudio
               key={item.title}
               audio={item}
               currentAudio={currentAudio}
