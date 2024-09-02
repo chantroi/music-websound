@@ -23,6 +23,7 @@ export default function Audio({
   const [currentLyricIndex, setCurrentLyricIndex] = useState(-1);
   const audioRef = useRef(null);
   const lyricsRef = useRef(null);
+  const animationFrameRef = useRef(null);
 
   useEffect(() => {
     if (audioRef.current) {
@@ -30,16 +31,13 @@ export default function Audio({
       audioRef.current.addEventListener("loadedmetadata", () => {
         setDuration(audioRef.current.duration);
       });
-      audioRef.current.addEventListener("timeupdate", () => {
-        setCurrentTime(audioRef.current.currentTime);
-        updateLyrics(audioRef.current.currentTime);
-      });
       audioRef.current.addEventListener("ended", handleNext);
 
       if (isPlaying) {
         audioRef.current
           .play()
           .catch((error) => console.error("Auto-play failed:", error));
+        startUpdatingLyrics();
       }
     }
 
@@ -55,6 +53,7 @@ export default function Audio({
       if (audioRef.current) {
         audioRef.current.removeEventListener("ended", handleNext);
       }
+      cancelAnimationFrame(animationFrameRef.current);
     };
   }, [lyricsUrl, isPlaying, title, artist, audioSrc]);
 
@@ -75,12 +74,29 @@ export default function Audio({
       .filter(Boolean);
   };
 
+  const startUpdatingLyrics = () => {
+    const update = () => {
+      setCurrentTime(audioRef.current.currentTime);
+      updateLyrics(audioRef.current.currentTime);
+      animationFrameRef.current = requestAnimationFrame(update);
+    };
+    animationFrameRef.current = requestAnimationFrame(update);
+  };
+
   const updateLyrics = (currentTime) => {
-    const index = lyrics.findIndex(
-      (lyric, index) =>
-        lyric.time <= currentTime &&
-        (!lyrics[index + 1] || lyrics[index + 1].time > currentTime)
-    );
+    let low = 0;
+    let high = lyrics.length - 1;
+    let index = -1;
+
+    while (low <= high) {
+      const mid = Math.floor((low + high) / 2);
+      if (lyrics[mid].time <= currentTime) {
+        index = mid;
+        low = mid + 1;
+      } else {
+        high = mid - 1;
+      }
+    }
 
     if (index !== currentLyricIndex) {
       setCurrentLyricIndex(index);
@@ -100,8 +116,10 @@ export default function Audio({
   const togglePlay = () => {
     if (isPlaying) {
       audioRef.current.pause();
+      cancelAnimationFrame(animationFrameRef.current);
     } else {
       audioRef.current.play();
+      startUpdatingLyrics();
     }
     setIsPlaying(!isPlaying);
   };
@@ -124,8 +142,10 @@ export default function Audio({
     if (toggleNext) {
       toggleNext();
       setIsPlaying(true);
+      startUpdatingLyrics();
     } else {
       setIsPlaying(false);
+      cancelAnimationFrame(animationFrameRef.current);
     }
   };
 
