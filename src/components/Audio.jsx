@@ -23,7 +23,6 @@ export default function Audio({
   const [currentLyricIndex, setCurrentLyricIndex] = useState(-1);
   const audioRef = useRef(null);
   const lyricsRef = useRef(null);
-  const animationFrameRef = useRef(null);
 
   useEffect(() => {
     if (audioRef.current) {
@@ -31,13 +30,17 @@ export default function Audio({
       audioRef.current.addEventListener("loadedmetadata", () => {
         setDuration(audioRef.current.duration);
       });
+      audioRef.current.addEventListener("timeupdate", () => {
+        setCurrentTime(audioRef.current.currentTime);
+        updateLyrics(audioRef.current.currentTime);
+      });
       audioRef.current.addEventListener("ended", handleNext);
 
+      // Auto-play when a new track is loaded
       if (isPlaying) {
         audioRef.current
           .play()
           .catch((error) => console.error("Auto-play failed:", error));
-        startUpdatingLyrics();
       }
     }
 
@@ -46,7 +49,6 @@ export default function Audio({
       .then((text) => {
         const parsedLyrics = parseLRC(text);
         setLyrics(parsedLyrics);
-        console.log("Parsed Lyrics:", parsedLyrics); // Debugging line
       })
       .catch((error) => console.error("Error fetching lyrics:", error));
 
@@ -54,20 +56,14 @@ export default function Audio({
       if (audioRef.current) {
         audioRef.current.removeEventListener("ended", handleNext);
       }
-      cancelAnimationFrame(animationFrameRef.current);
     };
   }, [lyricsUrl, isPlaying, title, artist, audioSrc]);
 
   const parseLRC = (lrc) => {
-    if (!lrc) {
-      console.error("Lyrics file is empty or could not be fetched.");
-      return [];
-    }
-
     const lines = lrc.split("\n");
-    const parsed = lines
+    return lines
       .map((line) => {
-        const match = line.match(/(\d{2}):(\d{2})\.(\d{2})(.*)/);
+        const match = line.match(/\[(\d{2}):(\d{2})\.(\d{2})\](.*)/);
         if (match) {
           const [, min, sec, ms, text] = match;
           return {
@@ -78,62 +74,19 @@ export default function Audio({
         return null;
       })
       .filter(Boolean);
-
-    if (parsed.length === 0) {
-      console.warn("No valid lyrics found in the file.");
-    }
-    return parsed;
-  };
-
-  const startUpdatingLyrics = () => {
-    const update = () => {
-      if (audioRef.current) {
-        setCurrentTime(audioRef.current.currentTime);
-        updateLyrics(audioRef.current.currentTime);
-      }
-      animationFrameRef.current = requestAnimationFrame(update);
-    };
-    animationFrameRef.current = requestAnimationFrame(update);
   };
 
   const updateLyrics = (currentTime) => {
-    if (lyrics.length === 0) {
-      console.warn("No lyrics available to update.");
-      return;
-    }
-
-    let low = 0;
-    let high = lyrics.length - 1;
-    let index = -1;
-
-    while (low <= high) {
-      const mid = Math.floor((low + high) / 2);
-      if (lyrics[mid].time <= currentTime) {
-        index = mid;
-        low = mid + 1;
-      } else {
-        high = mid - 1;
-      }
-    }
-
+    const index = lyrics.findIndex(
+      (lyric, index) =>
+        lyric.time <= currentTime &&
+        (!lyrics[index + 1] || lyrics[index + 1].time > currentTime)
+    );
     if (index !== currentLyricIndex) {
       setCurrentLyricIndex(index);
-
       if (lyricsRef.current && index !== -1) {
         const lyricElement = lyricsRef.current.children[index];
-        if (lyricElement) {
-          const rect = lyricElement.getBoundingClientRect();
-          const isInView = rect.top >= 0 && rect.bottom <= window.innerHeight;
-
-          if (!isInView) {
-            lyricElement.scrollIntoView({
-              behavior: "smooth",
-              block: "center",
-            });
-          }
-        } else {
-          console.warn("Lyric element not found in the DOM.");
-        }
+        lyricElement.scrollIntoView({ behavior: "smooth", block: "center" });
       }
     }
   };
@@ -141,10 +94,8 @@ export default function Audio({
   const togglePlay = () => {
     if (isPlaying) {
       audioRef.current.pause();
-      cancelAnimationFrame(animationFrameRef.current);
     } else {
       audioRef.current.play();
-      startUpdatingLyrics();
     }
     setIsPlaying(!isPlaying);
   };
@@ -166,11 +117,11 @@ export default function Audio({
     audioRef.current.currentTime = 0;
     if (toggleNext) {
       toggleNext();
+      // Ensure isPlaying is set to true for auto-play
       setIsPlaying(true);
-      startUpdatingLyrics();
     } else {
+      // If there's no next track, stop playing
       setIsPlaying(false);
-      cancelAnimationFrame(animationFrameRef.current);
     }
   };
 
@@ -250,11 +201,7 @@ export default function Audio({
             </div>
           </div>
         </div>
-        <div
-          className="p-4 h-64 overflow-y-auto"
-          ref={lyricsRef}
-          style={{ overflowX: "hidden" }}
-        >
+        <div className="p-4 h-64 overflow-y-auto" ref={lyricsRef}>
           {lyrics.map((lyric, index) => (
             <p
               key={index}
