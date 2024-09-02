@@ -46,6 +46,7 @@ export default function Audio({
       .then((text) => {
         const parsedLyrics = parseLRC(text);
         setLyrics(parsedLyrics);
+        console.log("Parsed Lyrics:", parsedLyrics); // Debugging line
       })
       .catch((error) => console.error("Error fetching lyrics:", error));
 
@@ -58,8 +59,13 @@ export default function Audio({
   }, [lyricsUrl, isPlaying, title, artist, audioSrc]);
 
   const parseLRC = (lrc) => {
+    if (!lrc) {
+      console.error("Lyrics file is empty or could not be fetched.");
+      return [];
+    }
+
     const lines = lrc.split("\n");
-    return lines
+    const parsed = lines
       .map((line) => {
         const match = line.match(/(\d{2}):(\d{2})\.(\d{2})(.*)/);
         if (match) {
@@ -72,18 +78,30 @@ export default function Audio({
         return null;
       })
       .filter(Boolean);
+
+    if (parsed.length === 0) {
+      console.warn("No valid lyrics found in the file.");
+    }
+    return parsed;
   };
 
   const startUpdatingLyrics = () => {
     const update = () => {
-      setCurrentTime(audioRef.current.currentTime);
-      updateLyrics(audioRef.current.currentTime);
+      if (audioRef.current) {
+        setCurrentTime(audioRef.current.currentTime);
+        updateLyrics(audioRef.current.currentTime);
+      }
       animationFrameRef.current = requestAnimationFrame(update);
     };
     animationFrameRef.current = requestAnimationFrame(update);
   };
 
   const updateLyrics = (currentTime) => {
+    if (lyrics.length === 0) {
+      console.warn("No lyrics available to update.");
+      return;
+    }
+
     let low = 0;
     let high = lyrics.length - 1;
     let index = -1;
@@ -103,11 +121,18 @@ export default function Audio({
 
       if (lyricsRef.current && index !== -1) {
         const lyricElement = lyricsRef.current.children[index];
-        const rect = lyricElement.getBoundingClientRect();
-        const isInView = rect.top >= 0 && rect.bottom <= window.innerHeight;
+        if (lyricElement) {
+          const rect = lyricElement.getBoundingClientRect();
+          const isInView = rect.top >= 0 && rect.bottom <= window.innerHeight;
 
-        if (!isInView) {
-          lyricElement.scrollIntoView({ behavior: "smooth", block: "center" });
+          if (!isInView) {
+            lyricElement.scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+            });
+          }
+        } else {
+          console.warn("Lyric element not found in the DOM.");
         }
       }
     }
