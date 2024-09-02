@@ -1,10 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Nav from "./components/Nav";
 import NavItem from "./components/NavItem";
 import Audio from "./components/Audio";
 import List from "./components/List";
 import ItemAudio from "./components/ItemAudio";
+import SearchItem from "./components/SearchItem";
+import ItemAlbum from "./components/ItemAlbum";
 import logoUrl from "./assets/react.svg";
+
+async function getAlbumList() {
+  const response = await fetch("https://serverdash.serv00.net/albums");
+  const data = await response.json();
+  return data;
+}
 
 async function getAlbum(album = null) {
   let result = [];
@@ -29,9 +37,13 @@ async function getAlbum(album = null) {
 
 export default function App() {
   const navItems = ["Danh Sách", "Bộ Sưu Tập", "Tìm Kiếm"];
+  const [albums, setAlbums] = useState([]);
+  const [currentAlbum, setCurrentAlbum] = useState("default");
   const [activeNavItem, setActiveNavItem] = useState(null);
   const [audioList, setAudioList] = useState([]);
   const [currentAudio, setCurrentAudio] = useState(null);
+  const searchResults = useRef(null);
+  const inputRef = useRef(null);
 
   useEffect(() => {
     const faviconLink = document.querySelector("link[rel='icon']");
@@ -52,10 +64,14 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    if (audioList.length !== 0) {
+    if (audioList.length > 0) {
       setCurrentAudio(audioList[0]);
     }
   }, [audioList]);
+
+  useEffect(() => {
+    getAlbumList().then((data) => setAlbums(data));
+  }, []);
 
   function togglePrevios() {
     if (currentAudio) {
@@ -73,6 +89,18 @@ export default function App() {
         setCurrentAudio(audioList[index + 1]);
       }
     }
+  }
+
+  async function onSearch() {
+    const query = inputRef.current.value;
+    const req = await fetch("https://zingsearch-1-t0130600.deta.app/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ query: query }),
+    });
+    searchResults.current = await req.json();
   }
 
   return (
@@ -113,6 +141,44 @@ export default function App() {
               setCurrentAudio={setCurrentAudio}
             />
           ))}
+        </List>
+      )}
+
+      {activeNavItem === "Bộ Sưu Tập" && (
+        <List>
+          {albums.map((item) => (
+            <ItemAlbum
+              key={item.title}
+              album={item}
+              currentAlbum={currentAlbum}
+              setCurrentAlbum={setCurrentAlbum}
+            />
+          ))}
+        </List>
+      )}
+      {activeNavItem === "Tìm Kiếm" && (
+        <List>
+          <div className="flex left-1 right-1">
+            <input
+              className="w-full top-0"
+              type="text"
+              placeholder="Tìm kiếm ..."
+              ref={inputRef}
+            />
+            <button onClick={() => onSearch()} className="bg-sky-500">
+              Tìm kiếm
+            </button>
+          </div>
+
+          {searchResults.current &&
+            searchResults.current.map((item) => (
+              <ItemAudio
+                key={item.title}
+                audio={item}
+                currentAlbum={currentAlbum}
+                setCurrentAudio={setCurrentAudio}
+              />
+            ))}
         </List>
       )}
     </div>
