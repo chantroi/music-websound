@@ -51,6 +51,13 @@ export default function App() {
           </NavItem>
         ))}
       </Nav>
+      <Audio
+        title={currentAudio?.title}
+        audioSrc={currentAudio?.url}
+        artist={currentAudio?.artist}
+        coverArt={currentAudio?.cover}
+        lyricsUrl={currentAudio?.lrc}
+      />{" "}
       {activeNavItem === "Danh Sách" && (
         <List>
           {audioList.map((item) => (
@@ -62,13 +69,6 @@ export default function App() {
           ))}
         </List>
       )}
-      <Audio
-        title={currentAudio?.title}
-        audioSrc={currentAudio?.url}
-        artist={currentAudio?.artist}
-        coverArt={currentAudio?.cover}
-        lyricsUrl={currentAudio?.lrc}
-      />
     </div>
   );
 }

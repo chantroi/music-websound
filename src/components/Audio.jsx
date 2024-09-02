@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import logoUrl from "../assets/react.svg";
 
 const formatTime = (time) => {
   const minutes = Math.floor(time / 60);
@@ -9,7 +10,7 @@ const formatTime = (time) => {
 export default function Audio({
   title = "Websound",
   artist = "Undefined",
-  coverArt = "",
+  coverArt = logoUrl,
   audioSrc = "",
   lyricsUrl = "",
 }) {
