@@ -8,11 +8,11 @@ const formatTime = (time) => {
 };
 
 export default function Audio({
-  title = "Chưa có nguồn âm thanh",
-  artist = "Undefined",
-  coverArt = logoUrl,
-  audioSrc = "",
-  lyricsUrl = "",
+  title,
+  artist,
+  coverArt,
+  audioSrc,
+  lyricsUrl,
   togglePrevios = null,
   toggleNext = null,
 }) {

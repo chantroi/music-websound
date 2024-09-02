@@ -37,7 +37,7 @@ export default function App() {
 
   useEffect(() => {
     const faviconLink = document.querySelector("link[rel='icon']");
-    
+
     if (faviconLink) {
       faviconLink.href = logoUrl;
     }
@@ -81,7 +81,9 @@ export default function App() {
         ))}
       </Nav>
       {!currentAudio ? (
-        <Audio />
+        <div className="flex justify-center items-center h-full">
+          <img src={logoUrl} alt="logo" />
+        </div>
       ) : (
         <Audio
           title={currentAudio.title}
