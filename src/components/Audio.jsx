@@ -36,7 +36,6 @@ export default function Audio({
       });
       audioRef.current.addEventListener("ended", handleNext);
 
-      // Auto-play when a new track is loaded
       if (isPlaying) {
         audioRef.current
           .play()
@@ -63,7 +62,7 @@ export default function Audio({
     const lines = lrc.split("\n");
     return lines
       .map((line) => {
-        const match = line.match(/\[(\d{2}):(\d{2})\.(\d{2})\](.*)/);
+        const match = line.match(/(\d{2}):(\d{2})\.(\d{2})(.*)/);
         if (match) {
           const [, min, sec, ms, text] = match;
           return {
@@ -82,11 +81,18 @@ export default function Audio({
         lyric.time <= currentTime &&
         (!lyrics[index + 1] || lyrics[index + 1].time > currentTime)
     );
+
     if (index !== currentLyricIndex) {
       setCurrentLyricIndex(index);
+
       if (lyricsRef.current && index !== -1) {
         const lyricElement = lyricsRef.current.children[index];
-        lyricElement.scrollIntoView({ behavior: "smooth", block: "center" });
+        const rect = lyricElement.getBoundingClientRect();
+        const isInView = rect.top >= 0 && rect.bottom <= window.innerHeight;
+
+        if (!isInView) {
+          lyricElement.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
       }
     }
   };
@@ -117,10 +123,8 @@ export default function Audio({
     audioRef.current.currentTime = 0;
     if (toggleNext) {
       toggleNext();
-      // Ensure isPlaying is set to true for auto-play
       setIsPlaying(true);
     } else {
-      // If there's no next track, stop playing
       setIsPlaying(false);
     }
   };
@@ -201,7 +205,11 @@ export default function Audio({
             </div>
           </div>
         </div>
-        <div className="p-4 h-64 overflow-y-auto" ref={lyricsRef}>
+        <div
+          className="p-4 h-64 overflow-y-auto"
+          ref={lyricsRef}
+          style={{ overflowX: "hidden" }}
+        >
           {lyrics.map((lyric, index) => (
             <p
               key={index}
