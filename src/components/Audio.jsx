@@ -21,7 +21,6 @@ export default function Audio({
   const [currentLyricIndex, setCurrentLyricIndex] = useState(-1);
   const audioRef = useRef(null);
   const lyricsRef = useRef(null);
-  const motionRef = useRef(null);
 
   useEffect(() => {
     if (audioRef.current) {
@@ -102,10 +101,6 @@ export default function Audio({
 
   return (
     <div className="w-full max-w-4xl mx-auto">
-      <div
-        className="w-full h-24 bg-gray-300 rounded-full"
-        ref={motionRef}
-      ></div>
       <div className="h-2 bg-red-900"></div>
       <div className="flex flex-col bg-white shadow-lg rounded-lg overflow-hidden">
         <div className="flex p-4">
