@@ -13,7 +13,7 @@ export default function Audio({
   coverArt,
   audioSrc,
   lyricsUrl,
-  togglePrevios = null,
+  togglePrevious = null,
   toggleNext = null,
 }) {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -34,6 +34,8 @@ export default function Audio({
         setCurrentTime(audioRef.current.currentTime);
         updateLyrics(audioRef.current.currentTime);
       });
+      // Add event listener for 'ended' event
+      audioRef.current.addEventListener("ended", handleNext);
     }
 
     fetch(lyricsUrl)
@@ -43,7 +45,14 @@ export default function Audio({
         setLyrics(parsedLyrics);
       })
       .catch((error) => console.error("Error fetching lyrics:", error));
-  }, [lyricsUrl, isPlaying]);
+
+    // Cleanup function
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.removeEventListener("ended", handleNext);
+      }
+    };
+  }, [lyricsUrl, isPlaying, title, artist]);
 
   const parseLRC = (lrc) => {
     const lines = lrc.split("\n");
@@ -94,12 +103,13 @@ export default function Audio({
 
   const handlePrevious = () => {
     audioRef.current.currentTime = 0;
-    togglePrevios();
+    if (togglePrevious) togglePrevious();
   };
 
   const handleNext = () => {
     audioRef.current.currentTime = 0;
-    toggleNext();
+    setIsPlaying(false);
+    if (toggleNext) toggleNext();
   };
 
   return (
