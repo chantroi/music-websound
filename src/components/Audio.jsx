@@ -110,6 +110,9 @@ export default function Audio({
     audioRef.current.currentTime = 0;
     if (togglePrevious) {
       togglePrevious();
+      setIsPlaying(true);
+    } else {
+      setIsPlaying(false);
     }
   };
 
