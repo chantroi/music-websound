@@ -108,7 +108,9 @@ export default function Audio({
 
   const handlePrevious = () => {
     audioRef.current.currentTime = 0;
-    if (togglePrevious) togglePrevious();
+    if (togglePrevious) {
+      togglePrevious();
+    }
   };
 
   const handleNext = () => {
