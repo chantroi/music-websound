@@ -6,26 +6,24 @@ import List from "./components/List";
 import ListItem from "./components/ListItem";
 import logoUrl from "./assets/react.svg";
 
-function getAlbum(album = null) {
+async function getAlbum(album = null) {
   let result = [];
-  let apiLink;
-  if (album === null) {
-    apiLink = "https://serverdash.serv00.net/list";
-  } else {
-    apiLink = `https://serverdash.serv00.net/list?album=${album}`;
+  let apiLink =
+    album === null
+      ? "https://serverdash.serv00.net/list"
+      : `https://serverdash.serv00.net/list?album=${album}`;
+
+  const response = await fetch(apiLink);
+  const data = await response.json();
+
+  for (const item of data) {
+    const audioResponse = await fetch(
+      `https://serverdash.serv00.net/get?title=${item}`
+    );
+    const audioData = await audioResponse.json();
+    result.push(audioData);
   }
 
-  fetch(apiLink)
-    .then((response) => response.json())
-    .then((data) =>
-      data.forEach((item) => {
-        fetch(`https://serverdash.serv00.net/get?title=${item}`)
-          .then((response) => response.json())
-          .then((data) => {
-            result.push(data);
-          });
-      })
-    );
   return result;
 }
 
@@ -44,10 +42,19 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    const audios = getAlbum();
-    setAudioList(audios);
-    setCurrentAudio(audios[0]);
+    async function fetchData() {
+      const audios = await getAlbum();
+      setAudioList(audios);
+    }
+
+    fetchData();
   }, []);
+
+  useEffect(() => {
+    if (audioList.length !== 0) {
+      setCurrentAudio(audioList[0]);
+    }
+  }, [audioList]);
 
   function togglePrevios() {
     if (currentAudio) {
