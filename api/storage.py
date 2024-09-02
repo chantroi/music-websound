@@ -17,7 +17,7 @@ class Storage:
 
     def get(self, title):
         path = f"bosuutap/music/{title}.mp3"
-        return self.fs.url(path, expires_in=600000)
+        return self.fs.url(path, expires=600000)
 
     def exists(self, title):
         path = f"bosuutap/music/{title}.mp3"

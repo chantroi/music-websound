@@ -38,8 +38,30 @@ export default function App() {
     setAudioList(getAlbum());
   }, []);
 
+  useEffect(() => {
+    setCurrentAudio(audioList[0]);
+  }, [audioList]);
+  
+  function togglePrevios() {
+    if (currentAudio) {
+      const index = audioList.indexOf(currentAudio);
+      if (index > 0) {
+        setCurrentAudio(audioList[index - 1]);
+      }
+    }
+  }
+
+  function toggleNext() {
+    if (currentAudio) {
+      const index = audioList.indexOf(currentAudio);
+      if (index < audioList.length - 1) {
+        setCurrentAudio(audioList[index + 1]);
+      }
+    }
+  }
+
   return (
-    <div className="h-screen">
+    <div className="h-screen bg-black">
       <Nav>
         {navItems.map((item) => (
           <NavItem
@@ -57,6 +79,8 @@ export default function App() {
         artist={currentAudio?.artist}
         coverArt={currentAudio?.cover}
         lyricsUrl={currentAudio?.lrc}
+        togglePrevios={togglePrevios}
+        toggleNext={toggleNext}
       />{" "}
       {activeNavItem === "Danh Sách" && (
         <List>

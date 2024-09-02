@@ -13,12 +13,13 @@ export default function Audio({
   coverArt = logoUrl,
   audioSrc = "",
   lyricsUrl = "",
+  togglePrevios = null,
+  toggleNext = null,
 }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [isLiked, setIsLiked] = useState(false);
-  const [lyrics, setLyrics] = useState([]); // Changed to array of objects
+  const [lyrics, setLyrics] = useState([]);
   const [currentLyricIndex, setCurrentLyricIndex] = useState(-1);
   const audioRef = useRef(null);
   const lyricsRef = useRef(null);
@@ -93,17 +94,18 @@ export default function Audio({
 
   const handlePrevious = () => {
     audioRef.current.currentTime = 0;
+    togglePrevios();
   };
 
   const handleNext = () => {
-    // In a real app, this would load the next track
     audioRef.current.currentTime = 0;
+    toggleNext();
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto">
+    <div className="w-full max-w-4xl mx-auto bg-slate-200">
       <div className="h-2 bg-red-900"></div>
-      <div className="flex flex-col bg-white shadow-lg rounded-lg overflow-hidden">
+      <div className="flex flex-col bg-stone-300 shadow-lg rounded-lg overflow-hidden">
         <div className="flex p-4">
           <div className="w-24 h-24 flex-shrink-0">
             <img
@@ -118,7 +120,7 @@ export default function Audio({
               <p className="text-sm text-gray-500">{artist}</p>
             </div>
             <div className="flex items-center">
-              <button onClick={handlePrevious} className="text-gray-600 mr-4">
+              <button onClick={handlePrevious} className="text-green-800 mr-4">
                 <svg
                   className="w-6 h-6"
                   fill="currentColor"
@@ -145,25 +147,13 @@ export default function Audio({
                   />
                 </svg>
               </button>
-              <button onClick={handleNext} className="text-gray-600 ml-4">
+              <button onClick={handleNext} className="text-green-800 ml-4">
                 <svg
                   className="w-6 h-6"
                   fill="currentColor"
                   viewBox="0 0 20 20"
                 >
                   <path d="M13 5h3v10h-3V5zM4 5l9 5-9 5V5z" />
-                </svg>
-              </button>
-              <button
-                onClick={() => setIsLiked(!isLiked)}
-                className={`ml-auto text-${isLiked ? "red" : "gray"}-400`}
-              >
-                <svg
-                  className="w-6 h-6"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path d="M10 3.22l-.61-.6a5.5 5.5 0 0 0-7.78 7.77L10 18.78l8.39-8.4a5.5 5.5 0 0 0-7.78-7.77l-.61.61z" />
                 </svg>
               </button>
             </div>
