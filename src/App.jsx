@@ -42,7 +42,7 @@ export default function App() {
   const [activeNavItem, setActiveNavItem] = useState(null);
   const [audioList, setAudioList] = useState([]);
   const [currentAudio, setCurrentAudio] = useState(null);
-  const searchResults = useRef(null);
+  const [searchResults, setSearchResults] = useState([]);
   const inputRef = useRef(null);
 
   useEffect(() => {
@@ -92,6 +92,7 @@ export default function App() {
   }
 
   async function onSearch() {
+    setActiveNavItem("");
     const query = inputRef.current.value;
     const req = await fetch("https://zingsearch-1-t0130600.deta.app/", {
       method: "POST",
@@ -100,7 +101,9 @@ export default function App() {
       },
       body: JSON.stringify({ query: query }),
     });
-    searchResults.current = await req.json();
+    const results = await req.json();
+    setSearchResults(results);
+    setActiveNavItem("Tìm Kiếm");
   }
 
   return (
@@ -165,21 +168,20 @@ export default function App() {
               placeholder="Tìm kiếm ..."
               ref={inputRef}
             />
-            <button onClick={() => onSearch()} className="bg-sky-500">
+            <button onClick={onSearch} className="bg-sky-500">
               Tìm kiếm
             </button>
           </div>
 
-          {searchResults.current &&
-            searchResults.current.map((item) => (
-              <ItemAudio
-                key={item.title}
-                audio={item}
-                currentAlbum={currentAlbum}
-                audioList={audioList}
-                setAudioList={setAudioList}
-              />
-            ))}
+          {searchResults.map((item) => (
+            <SearchItem
+              key={item.title}
+              audio={item}
+              currentAlbum={currentAlbum}
+              audioList={audioList}
+              setAudioList={setAudioList}
+            />
+          ))}
         </List>
       )}
     </div>
