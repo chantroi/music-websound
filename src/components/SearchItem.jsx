@@ -19,7 +19,13 @@ export default function SearchItem({
       );
       const data = await req.json();
       if (data.success) {
-        setAudioList([...audioList, audio]);
+        setAudioList((prevList) => {
+          // Kiểm tra xem audio đã tồn tại trong list chưa
+          if (!prevList.some((item) => item.url === audio.url)) {
+            return [...prevList, audio];
+          }
+          return prevList;
+        });
         setIsSelected(true);
       } else {
         console.error("Failed to save audio:", data.message);
@@ -38,8 +44,7 @@ export default function SearchItem({
       <div
         className={`w-full p-4 flex flex-row items-center justify-between ${
           isSelected ? "bg-red-500" : "bg-slate-300"
-        }
-    `}
+        }`}
         onClick={() => saveAudio(currentAlbum, audio)}
       >
         <img src={audio.cover} alt="" width="60" height="88" />

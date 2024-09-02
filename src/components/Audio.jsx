@@ -34,8 +34,14 @@ export default function Audio({
         setCurrentTime(audioRef.current.currentTime);
         updateLyrics(audioRef.current.currentTime);
       });
-      // Add event listener for 'ended' event
       audioRef.current.addEventListener("ended", handleNext);
+
+      // Auto-play when a new track is loaded
+      if (isPlaying) {
+        audioRef.current
+          .play()
+          .catch((error) => console.error("Auto-play failed:", error));
+      }
     }
 
     fetch(lyricsUrl)
@@ -46,13 +52,12 @@ export default function Audio({
       })
       .catch((error) => console.error("Error fetching lyrics:", error));
 
-    // Cleanup function
     return () => {
       if (audioRef.current) {
         audioRef.current.removeEventListener("ended", handleNext);
       }
     };
-  }, [lyricsUrl, isPlaying, title, artist]);
+  }, [lyricsUrl, isPlaying, title, artist, audioSrc]);
 
   const parseLRC = (lrc) => {
     const lines = lrc.split("\n");
@@ -108,8 +113,14 @@ export default function Audio({
 
   const handleNext = () => {
     audioRef.current.currentTime = 0;
-    setIsPlaying(false);
-    if (toggleNext) toggleNext();
+    if (toggleNext) {
+      toggleNext();
+      // Ensure isPlaying is set to true for auto-play
+      setIsPlaying(true);
+    } else {
+      // If there's no next track, stop playing
+      setIsPlaying(false);
+    }
   };
 
   return (
