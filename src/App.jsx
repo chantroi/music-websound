@@ -176,7 +176,8 @@ export default function App() {
                 key={item.title}
                 audio={item}
                 currentAlbum={currentAlbum}
-                setCurrentAudio={setCurrentAudio}
+                audioList={audioList}
+                setAudioList={setAudioList}
               />
             ))}
         </List>

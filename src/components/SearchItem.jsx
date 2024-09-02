@@ -1,4 +1,9 @@
-export default function SearchItem({ audio, currentAlbum, setCurrentAudio }) {
+export default function SearchItem({
+  audio,
+  currentAlbum,
+  audioList,
+  setAudioList,
+}) {
   async function saveAudio(album, audio) {
     const req = await fetch("https://serverdash.serv00.net/save/zing", {
       method: "POST",
@@ -9,7 +14,7 @@ export default function SearchItem({ audio, currentAlbum, setCurrentAudio }) {
     });
     const data = await req.json();
     if (data) {
-      setCurrentAudio(data);
+      setAudioList([...audioList, audio]);
     }
   }
 
