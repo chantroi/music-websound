@@ -4,6 +4,7 @@ import NavItem from "./components/NavItem";
 import Audio from "./components/Audio";
 import List from "./components/List";
 import ListItem from "./components/ListItem";
+import logoUrl from "./assets/react.svg";
 
 function getAlbum(album = null) {
   let result = [];
@@ -35,13 +36,19 @@ export default function App() {
   const [currentAudio, setCurrentAudio] = useState(null);
 
   useEffect(() => {
-    setAudioList(getAlbum());
+    const faviconLink = document.querySelector("link[rel='icon']");
+    
+    if (faviconLink) {
+      faviconLink.href = logoUrl;
+    }
   }, []);
 
   useEffect(() => {
-    setCurrentAudio(audioList[0]);
-  }, [audioList]);
-  
+    const audios = getAlbum();
+    setAudioList(audios);
+    setCurrentAudio(audios[0]);
+  }, []);
+
   function togglePrevios() {
     if (currentAudio) {
       const index = audioList.indexOf(currentAudio);
@@ -73,15 +80,19 @@ export default function App() {
           </NavItem>
         ))}
       </Nav>
-      <Audio
-        title={currentAudio?.title}
-        audioSrc={currentAudio?.url}
-        artist={currentAudio?.artist}
-        coverArt={currentAudio?.cover}
-        lyricsUrl={currentAudio?.lrc}
-        togglePrevios={togglePrevios}
-        toggleNext={toggleNext}
-      />{" "}
+      {!currentAudio ? (
+        <Audio />
+      ) : (
+        <Audio
+          title={currentAudio.title}
+          audioSrc={currentAudio.url}
+          artist={currentAudio.artist}
+          coverArt={currentAudio.cover}
+          lyricsUrl={currentAudio.lrc}
+          togglePrevios={togglePrevios}
+          toggleNext={toggleNext}
+        />
+      )}
       {activeNavItem === "Danh Sách" && (
         <List>
           {audioList.map((item) => (

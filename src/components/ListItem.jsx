@@ -1,6 +1,9 @@
 export default function ListItem({ audio, currentAudio, setCurrentAudio }) {
   return (
-    <article className="flex items-start space-x-6 p-6">
+    <article
+      className="flex items-start space-x-6 p-6"
+      onClick={() => setCurrentAudio(audio)}
+    >
       <img
         src={audio.cover}
         alt=""
@@ -10,7 +13,7 @@ export default function ListItem({ audio, currentAudio, setCurrentAudio }) {
       />
       <div className="min-w-0 relative flex-auto">
         <h2 className="font-semibold text-slate-900 truncate pr-20">
-          <a onClick={() => setCurrentAudio(audio)}>{audio.title}</a>
+          {audio.title}
         </h2>
         <dl className="mt-2 flex flex-wrap text-sm leading-6 font-medium">
           <div className="absolute top-0 right-0 flex items-center space-x-1">
