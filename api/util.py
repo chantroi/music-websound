@@ -24,10 +24,7 @@ def search_zingmp3(query):
         "https://ac.zingmp3.vn/v1/web/ac-suggestions",
         params={"query": query},
         timeout=10,
-        proxies={
-            "http": "http://116.103.226.48:3128",
-            "https": "http://116.103.226.48:3128",
-        },
+        headers={"X-Forwarded-For": "127.0.0.1"},
     ).json()
     results = results["data"]["items"][1]["suggestions"]
 
