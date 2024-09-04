@@ -43,6 +43,7 @@ export default function App() {
   const [audioList, setAudioList] = useState([]);
   const [currentAudio, setCurrentAudio] = useState(null);
   const [searchResults, setSearchResults] = useState([]);
+  const [searchOption, setSearchOption] = useState("youtube");
   const inputRef = useRef(null);
 
   useEffect(() => {
@@ -91,16 +92,27 @@ export default function App() {
     }
   }
 
+  function onSearchOptionChange(e) {
+    setSearchOption(e.target.value);
+  }
+
   async function onSearch() {
     setActiveNavItem("");
     const query = inputRef.current.value;
-    const req = await fetch("https://zingsearch-1-t0130600.deta.app/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ query: query }),
-    });
+    let req;
+    if (searchOption === "youtube") {
+      req = await fetch(
+        `https://serverdash.serv00.net/search/youtube/?query=${query}`
+      );
+    } else {
+      req = await fetch("https://zingsearch-1-t0130600.deta.app/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ query: query }),
+      });
+    }
     const results = await req.json();
     setSearchResults(results);
     setActiveNavItem("Tìm Kiếm");
@@ -168,6 +180,10 @@ export default function App() {
               placeholder="Tìm kiếm ..."
               ref={inputRef}
             />
+            <select onChange={onSearchOptionChange}>
+              <option value="youtube">Youtube</option>
+              <option value="zingmp3">Zing Mp3</option>
+            </select>
             <button onClick={onSearch} className="bg-sky-500">
               Tìm kiếm
             </button>

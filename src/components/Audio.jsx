@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from "react";
-import logoUrl from "../assets/react.svg";
 
 const formatTime = (time) => {
   const minutes = Math.floor(time / 60);
@@ -36,7 +35,6 @@ export default function Audio({
       });
       audioRef.current.addEventListener("ended", handleNext);
 
-      // Auto-play when a new track is loaded
       if (isPlaying) {
         audioRef.current
           .play()
@@ -60,6 +58,9 @@ export default function Audio({
   }, [lyricsUrl, isPlaying, title, artist, audioSrc]);
 
   const parseLRC = (lrc) => {
+    if (!lrc) {
+      return [];
+    }
     const lines = lrc.split("\n");
     return lines
       .map((line) => {
