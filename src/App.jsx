@@ -102,7 +102,14 @@ export default function App() {
     let req;
     if (searchOption === "youtube") {
       req = await fetch(
-        `https://serverdash.serv00.net/search/youtube/?query=${query}`
+        "https://serverdash.serv00.net/search/youtube",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ query: query }),
+        }
       );
     } else {
       req = await fetch("https://zingsearch-1-t0130600.deta.app/", {
