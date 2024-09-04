@@ -175,7 +175,7 @@ export default function App() {
         <List>
           <div className="flex left-1 right-1">
             <input
-              className="w-full top-0"
+              className="w-auto top-0"
               type="text"
               placeholder="Tìm kiếm ..."
               ref={inputRef}
