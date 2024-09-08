@@ -4,7 +4,6 @@ import List from "./List";
 
 export default function AudioContainer({ audioList }) {
   const [currentAudio, setCurrentAudio] = useState(null);
-  const [isAddEvent, setIsAddEvent] = useState(false);
   const audioRef = useRef(null);
 
   useEffect(() => {
@@ -12,15 +11,23 @@ export default function AudioContainer({ audioList }) {
   }, [audioList]);
 
   useEffect(() => {
-    if (!isAddEvent) {
-      audioRef.current.addEventListener("ended", () => {
-        const currentIndex = audioList.indexOf(currentAudio);
-        const nextIndex = (currentIndex + 1) % audioList.length;
-        setCurrentAudio(audioList[nextIndex]);
-      });
-      setIsAddEvent(true);
+    const handleEnded = () => {
+      const currentIndex = audioList.indexOf(currentAudio);
+      const nextIndex = (currentIndex + 1) % audioList.length;
+      setCurrentAudio(audioList[nextIndex]);
+    };
+
+    const audioElement = audioRef.current;
+    if (audioElement) {
+      audioElement.addEventListener("ended", handleEnded);
     }
-  }, [audioRef.current, currentAudio, audioList]);
+
+    return () => {
+      if (audioElement) {
+        audioElement.removeEventListener("ended", handleEnded);
+      }
+    };
+  }, [audioRef, currentAudio, audioList]);
 
   useEffect(() => {
     const faviconLink = document.querySelector("link[rel='icon']");
