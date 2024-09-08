@@ -13,12 +13,12 @@ export default function AudioContainer({ audioList }) {
 
   useEffect(() => {
     if (!isAddEvent) {
-      setIsAddEvent(true);
       audioRef.current.addEventListener("ended", () => {
         const currentIndex = audioList.indexOf(currentAudio);
         const nextIndex = (currentIndex + 1) % audioList.length;
         setCurrentAudio(audioList[nextIndex]);
       });
+      setIsAddEvent(true);
     }
   }, [audioRef.current, currentAudio, audioList]);
 
@@ -27,9 +27,9 @@ export default function AudioContainer({ audioList }) {
 
     if (currentAudio) {
       audioRef.current.src = currentAudio.url;
-      audioRef.current.play();
       document.title = currentAudio.title + " | Websound";
       faviconLink.href = currentAudio.cover;
+      audioRef.current.play();
     }
   }, [currentAudio]);
 
