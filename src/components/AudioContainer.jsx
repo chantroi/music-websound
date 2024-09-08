@@ -19,7 +19,7 @@ export default function AudioContainer({ audioList }) {
       }
       audioRef.current.play();
     });
-  }, [audioRef.current]);
+  }, [audioRef.current, currentAudio]);
 
   useEffect(() => {
     const faviconLink = document.querySelector("link[rel='icon']");
