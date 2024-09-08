@@ -10,7 +10,7 @@ import logoUrl from "./assets/react.svg";
 export default function App() {
   const navItems = ["Bộ Sưu Tập", "Tìm Kiếm"];
   const [albums, setAlbums] = useState([]);
-  const [currentAlbum, setCurrentAlbum] = useState("");
+  const [currentAlbum, setCurrentAlbum] = useState("default");
   const [activeNavItem, setActiveNavItem] = useState(null);
   const [audioList, setAudioList] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
@@ -32,7 +32,6 @@ export default function App() {
       setAlbums(data);
     }
     fetchAlbums();
-    setCurrentAlbum("default");
   }, []);
 
   useEffect(() => {
