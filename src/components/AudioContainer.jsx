@@ -8,8 +8,8 @@ export default function AudioContainer({ audioList }) {
 
   useEffect(() => {
     setCurrentAudio(audioList[0]);
-    audioRef.current.addEvenListener("ended", () => {
-      if (audioList.indexOf(currentAudio) === audioList.length) {
+    audioRef.current.addEventListener("ended", () => {
+      if (audioList.indexOf(currentAudio) === audioList.length - 1) {
         setCurrentAudio(audioList[0]);
       } else {
         setCurrentAudio(audioList[audioList.indexOf(currentAudio) + 1]);
