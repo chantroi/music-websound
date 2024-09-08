@@ -15,6 +15,9 @@ export default function AudioContainer({ audioList }) {
         setCurrentAudio(audioList[audioList.indexOf(currentAudio) + 1]);
       }
     });
+    audioRef.current.addEventListener("canplay", () => {
+      audioRef.current.play();
+    });
   }, [audioList]);
 
   useEffect(() => {
