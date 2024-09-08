@@ -44,7 +44,7 @@ export default function AudioContainer({ audioList }) {
           )}
       </List>
       <div className="fixed bottom-1 left-1 right-1">
-        <p className="justify-center flex text-center text-violet-500 text-3xl">
+        <p className="justify-center flex text-center text-violet-500 text-3xl pointer-events-none">
           {currentAudio?.title}
         </p>
         <audio className="w-full" ref={audioRef} controls />
