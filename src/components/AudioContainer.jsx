@@ -12,10 +12,10 @@ export default function AudioContainer({ audioList }) {
 
   useEffect(() => {
     audioRef.current.addEventListener("ended", () => {
-      if (audioList.indexOf(currentAudio) === audioList.length - 1) {
+      const currentIndex = audioList.indexOf(currentAudio);
+      setCurrentAudio(audioList[currentIndex + 1]);
+      if (currentIndex === audioList.length - 1) {
         setCurrentAudio(audioList[0]);
-      } else {
-        setCurrentAudio(audioList[audioList.indexOf(currentAudio) + 1]);
       }
       audioRef.current.play();
     });
