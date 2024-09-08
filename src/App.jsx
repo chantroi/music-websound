@@ -1,47 +1,18 @@
 import React, { useState, useEffect, useRef } from "react";
 import Nav from "./components/Nav";
 import NavItem from "./components/NavItem";
-import Audio from "./components/Audio";
 import List from "./components/List";
-import ItemAudio from "./components/ItemAudio";
 import SearchItem from "./components/SearchItem";
 import ItemAlbum from "./components/ItemAlbum";
+import AudioContainer from "./components/AudioContainer";
 import logoUrl from "./assets/react.svg";
 
-async function getAlbumList() {
-  const response = await fetch("https://serverdash.serv00.net/albums");
-  const data = await response.json();
-  return data;
-}
-
-async function getAlbum(album = null) {
-  let result = [];
-  let apiLink =
-    album === null
-      ? "https://serverdash.serv00.net/list"
-      : `https://serverdash.serv00.net/list?album=${album}`;
-
-  const response = await fetch(apiLink);
-  const data = await response.json();
-
-  for (const item of data) {
-    const audioResponse = await fetch(
-      `https://serverdash.serv00.net/get?title=${item}`
-    );
-    const audioData = await audioResponse.json();
-    result.push(audioData);
-  }
-
-  return result;
-}
-
 export default function App() {
-  const navItems = ["Danh Sách", "Bộ Sưu Tập", "Tìm Kiếm"];
+  const navItems = ["Bộ Sưu Tập", "Tìm Kiếm"];
   const [albums, setAlbums] = useState([]);
-  const [currentAlbum, setCurrentAlbum] = useState("default");
+  const [currentAlbum, setCurrentAlbum] = useState("");
   const [activeNavItem, setActiveNavItem] = useState(null);
   const [audioList, setAudioList] = useState([]);
-  const [currentAudio, setCurrentAudio] = useState(null);
   const [searchResults, setSearchResults] = useState([]);
   const [searchOption, setSearchOption] = useState("youtube");
   const inputRef = useRef(null);
@@ -55,42 +26,33 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    async function fetchData() {
-      const audios = await getAlbum();
-      setAudioList(audios);
+    async function fetchAlbums() {
+      const response = await fetch("https://serverdash.serv00.net/albums");
+      const data = await response.json();
+      setAlbums(data);
     }
-    if (audioList.length === 0) {
-      fetchData();
-    }
+    fetchAlbums();
+    setCurrentAlbum("default");
   }, []);
 
   useEffect(() => {
-    if (audioList.length > 0) {
-      setCurrentAudio(audioList[0]);
-    }
-  }, [audioList]);
-
-  useEffect(() => {
-    getAlbumList().then((data) => setAlbums(data));
-  }, []);
-
-  function togglePrevios() {
-    if (currentAudio) {
-      const index = audioList.indexOf(currentAudio);
-      if (index > 0) {
-        setCurrentAudio(audioList[index - 1]);
+    async function Exe() {
+      let apiLink =
+        currentAlbum === "default" || currentAlbum === ""
+          ? "https://serverdash.serv00.net/list"
+          : `https://serverdash.serv00.net/list?album=${currentAlbum}`;
+      const response = await fetch(apiLink);
+      const data = await response.json();
+      for (const item of data) {
+        const audioResponse = await fetch(
+          `https://serverdash.serv00.net/get?title=${item}`
+        );
+        const audioData = await audioResponse.json();
+        setAudioList((prevList) => [...prevList, audioData]);
       }
     }
-  }
-
-  function toggleNext() {
-    if (currentAudio) {
-      const index = audioList.indexOf(currentAudio);
-      if (index < audioList.length - 1) {
-        setCurrentAudio(audioList[index + 1]);
-      }
-    }
-  }
+    Exe();
+  }, [currentAlbum]);
 
   function onSearchOptionChange(e) {
     setSearchOption(e.target.value);
@@ -101,16 +63,13 @@ export default function App() {
     const query = inputRef.current.value;
     let req;
     if (searchOption === "youtube") {
-      req = await fetch(
-        "https://serverdash.serv00.net/search/youtube",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ query: query }),
-        }
-      );
+      req = await fetch("https://serverdash.serv00.net/search/youtube", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ query: query }),
+      });
     } else {
       req = await fetch("https://zingsearch-1-t0130600.deta.app/", {
         method: "POST",
@@ -126,7 +85,7 @@ export default function App() {
   }
 
   return (
-    <div className="h-screen bg-black">
+    <div className="h-screen bg-black w-screen">
       <Nav>
         {navItems.map((item) => (
           <NavItem
@@ -138,34 +97,14 @@ export default function App() {
           </NavItem>
         ))}
       </Nav>
-      {!currentAudio ? (
-        <div className="flex justify-center items-center h-full">
-          <img src={logoUrl} alt="logo" />
-        </div>
+      {audioList.length > 0 ? (
+        <AudioContainer audioList={audioList} />
       ) : (
-        <Audio
-          title={currentAudio.title}
-          audioSrc={currentAudio.url}
-          artist={currentAudio.artist}
-          coverArt={currentAudio.cover}
-          lyricsUrl={currentAudio.lrc}
-          togglePrevios={togglePrevios}
-          toggleNext={toggleNext}
-        />
+        <div className="flex items-center justify-center h-screen w-screen text-white">
+          <img src={logoUrl} alt="logo" />
+          Loading...
+        </div>
       )}
-      {activeNavItem === "Danh Sách" && (
-        <List>
-          {audioList.map((item) => (
-            <ItemAudio
-              key={item.title}
-              audio={item}
-              currentAudio={currentAudio}
-              setCurrentAudio={setCurrentAudio}
-            />
-          ))}
-        </List>
-      )}
-
       {activeNavItem === "Bộ Sưu Tập" && (
         <List>
           {albums.map((item) => (
