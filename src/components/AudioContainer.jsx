@@ -8,6 +8,9 @@ export default function AudioContainer({ audioList }) {
 
   useEffect(() => {
     setCurrentAudio(audioList[0]);
+    audioRef.current.addEvenListener("ended", () => {
+      setCurrentAudio(audioList[audioList.indexOf(currentAudio) + 1]);
+    });
   }, [audioList]);
 
   useEffect(() => {
