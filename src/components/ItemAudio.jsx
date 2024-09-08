@@ -1,7 +1,7 @@
 export default function ItemAudio({ audio, currentAudio, setCurrentAudio }) {
   return (
     <article
-      className={"flex items-start space-x-6 p-6" + (currentAudio === audio ? " bg-orange-200" : "")}
+      className={"flex items-start space-x-6 p-6 w-full" + (currentAudio === audio ? " bg-orange-200" : "")}
       onClick={() => setCurrentAudio(audio)}
     >
       <img

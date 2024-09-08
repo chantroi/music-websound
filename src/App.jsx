@@ -48,7 +48,7 @@ export default function App() {
         );
         const audioData = await audioResponse.json();
         if (!audioList.includes(audioData)) {
-          setAudioList([...audioList, audioData]);
+          setAudioList((audioList) => [...audioList, audioData]);
         }
       }
     }
