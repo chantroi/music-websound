@@ -18,19 +18,8 @@ export default function SearchItem({
         `https://serverdash.serv00.net/save/zing?url=${audio.url}&album=${album}`
       );
       const data = await req.json();
-      if (data.success) {
-        setAudioList((prevList) => {
-          // Kiểm tra xem audio đã tồn tại trong list chưa
-          if (!prevList.some((item) => item.url === audio.url)) {
-            return [...prevList, audio];
-          }
-          return prevList;
-        });
-        setIsSelected(true);
-      } else {
-        console.error("Failed to save audio:", data.message);
-        setIsSelected(false);
-      }
+      setAudioList((audioList) => [...audioList, data]);
+      setIsSelected(true);
     } catch (error) {
       console.error("Error saving audio:", error);
       setIsSelected(false);
