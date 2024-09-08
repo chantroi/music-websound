@@ -40,7 +40,7 @@ export default function SearchItem({
   }
 
   return (
-    <div className="w-full">
+    <div className="w-screen">
       <div
         className={`w-full p-4 flex flex-row items-center justify-between ${
           isSelected ? "bg-red-500" : "bg-slate-300"
