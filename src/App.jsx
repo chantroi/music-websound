@@ -48,7 +48,12 @@ export default function App() {
           `https://serverdash.serv00.net/get?title=${item}`
         );
         const audioData = await audioResponse.json();
-        setAudioList((prevList) => [...prevList, audioData]);
+        setAudioList((prevList) => {
+          if (!prevList.some(item => item.id === audioData.id)) { 
+            return [...prevList, audioData];
+          }
+          return prevList;
+        });
       }
     }
     Exe();

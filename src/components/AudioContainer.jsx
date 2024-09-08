@@ -16,27 +16,28 @@ export default function AudioContainer({ audioList }) {
     if (currentAudio) {
       audioRef.current.src = currentAudio.url;
       document.title = currentAudio.title;
-      faviconLink.href = logoUrl;
+      faviconLink.href = currentAudio.cover;
     }
   }, [currentAudio]);
   return (
     <>
+      <ul className="divide-y divide-slate-300 bg-slate-300 fixed top-14 bottom-14 overflow-y-auto">
+        {Array.isArray(audioList) &&
+          audioList.map(
+            (audio) =>
+              typeof audio === "object" &&
+              audio.title && (
+                <ItemAudio
+                  key={audio.title}
+                  audio={audio}
+                  currentAudio={currentAudio}
+                  setCurrentAudio={setCurrentAudio}
+                />
+              )
+          )}
+      </ul>
       <div className="fixed bottom-1 left-1 right-1">
-        <ul className="divide-y divide-slate-300 bg-slate-300 fixed top-20 bottom-15 overflow-y-auto">
-          {Array.isArray(audioList) &&
-            audioList.map(
-              (audio) =>
-                typeof audio === "object" &&
-                audio.title && (
-                  <ItemAudio
-                    key={audio.title}
-                    audio={audio}
-                    currentAudio={currentAudio}
-                    setCurrentAudio={setCurrentAudio}
-                  />
-                )
-            )}
-        </ul>
+        <p className="justify-center flex text-center text-violet-500 text-3xl">{currentAudio?.title}</p>
         <audio className="w-full" ref={audioRef} controls />
       </div>
     </>
