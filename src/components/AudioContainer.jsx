@@ -25,7 +25,7 @@ export default function AudioContainer({ audioList }) {
 
     if (currentAudio) {
       audioRef.current.src = currentAudio.url;
-      document.title = currentAudio.title;
+      document.title = currentAudio.title + " | Websound";
       faviconLink.href = currentAudio.cover;
     }
   }, [currentAudio]);
