@@ -8,6 +8,9 @@ export default function AudioContainer({ audioList }) {
 
   useEffect(() => {
     setCurrentAudio(audioList[0]);
+  }, [audioList]);
+
+  useEffect(() => {
     audioRef.current.addEventListener("ended", () => {
       if (audioList.indexOf(currentAudio) === audioList.length - 1) {
         setCurrentAudio(audioList[0]);
@@ -18,7 +21,7 @@ export default function AudioContainer({ audioList }) {
     audioRef.current.addEventListener("canplay", () => {
       audioRef.current.play();
     });
-  }, [audioList]);
+  }, [audioRef.current]);
 
   useEffect(() => {
     const faviconLink = document.querySelector("link[rel='icon']");
@@ -29,6 +32,7 @@ export default function AudioContainer({ audioList }) {
       faviconLink.href = currentAudio.cover;
     }
   }, [currentAudio]);
+
   return (
     <>
       <List>
