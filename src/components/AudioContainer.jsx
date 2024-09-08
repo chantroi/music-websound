@@ -12,14 +12,14 @@ export default function AudioContainer({ audioList }) {
   }, [audioList]);
 
   useEffect(() => {
-    if (isAddEvent) return;
-    setIsAddEvent(true);
-    audioRef.current.addEventListener("ended", () => {
-      const currentIndex = audioList.indexOf(currentAudio);
-      const nextIndex = (currentIndex + 1) % audioList.length;
-      setCurrentAudio(audioList[nextIndex]);
-      audioRef.current.play();
-    });
+    if (!isAddEvent) {
+      setIsAddEvent(true);
+      audioRef.current.addEventListener("ended", () => {
+        const currentIndex = audioList.indexOf(currentAudio);
+        const nextIndex = (currentIndex + 1) % audioList.length;
+        setCurrentAudio(audioList[nextIndex]);
+      });
+    }
   }, [audioRef.current, currentAudio, audioList]);
 
   useEffect(() => {
@@ -27,6 +27,7 @@ export default function AudioContainer({ audioList }) {
 
     if (currentAudio) {
       audioRef.current.src = currentAudio.url;
+      audioRef.current.play();
       document.title = currentAudio.title + " | Websound";
       faviconLink.href = currentAudio.cover;
     }
