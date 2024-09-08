@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import ItemAudio from "./ItemAudio";
-import logoUrl from "../assets/react.svg";
+import List from "./List";
 
 export default function AudioContainer({ audioList }) {
   const [currentAudio, setCurrentAudio] = useState(null);
@@ -21,7 +21,7 @@ export default function AudioContainer({ audioList }) {
   }, [currentAudio]);
   return (
     <>
-      <ul className="divide-y divide-slate-300 bg-slate-300 fixed top-14 bottom-14 overflow-y-auto">
+      <List>
         {Array.isArray(audioList) &&
           audioList.map(
             (audio) =>
@@ -35,9 +35,11 @@ export default function AudioContainer({ audioList }) {
                 />
               )
           )}
-      </ul>
+      </List>
       <div className="fixed bottom-1 left-1 right-1">
-        <p className="justify-center flex text-center text-violet-500 text-3xl">{currentAudio?.title}</p>
+        <p className="justify-center flex text-center text-violet-500 text-3xl">
+          {currentAudio?.title}
+        </p>
         <audio className="w-full" ref={audioRef} controls />
       </div>
     </>
