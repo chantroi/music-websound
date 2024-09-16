@@ -14,8 +14,11 @@ export default function SearchItem({
     setIsSaving(true);
 
     try {
+      const apiUrl = audio.url.includes("zingmp3")
+        ? "save/zing"
+        : "save/youtube";
       const req = await fetch(
-        `https://serverdash.serv00.net/save/zing?url=${audio.url}&album=${album}`
+        `https://serverdash.serv00.net/${apiUrl}?url=${audio.url}&album=${album}`
       );
       const data = await req.json();
       setAudioList((audioList) => [...audioList, data]);
