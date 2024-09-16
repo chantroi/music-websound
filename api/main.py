@@ -10,7 +10,7 @@ CORS(app)
 
 @app.route("/")
 def index():
-    return jsonify(status="ok", message="Websound Collection API")
+    return jsonify(status="ok", message="API is running")
 
 
 @app.route("/album/create", methods=["POST", "GET"])
