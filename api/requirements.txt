@@ -5,3 +5,4 @@ SQLAlchemy
 SQLAlchemy-libsql
 yt-dlp
 requests
+gunicorn
