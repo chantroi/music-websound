@@ -1,11 +1,6 @@
 import os
-import requests
 
-SECRET = os.getenv("SECRET")
-
-req = requests.get(SECRET, timeout=10)
-res = req.json()
-DB_URL = res["db"]["libsql"]
-S3_ENDPOINT = res["s3"][4]["endpoint"]
-S3_KEY = res["s3"][4]["key"]
-S3_SECRET = res["s3"][4]["secret"]
+DB_URL = os.environ.get("DB_URL")
+S3_ENDPOINT = os.environ.get("ENDPOINT")
+S3_KEY = os.environ.get("KEY")
+S3_SECRET = os.environ.get("SECRET")

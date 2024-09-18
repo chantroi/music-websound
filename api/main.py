@@ -6,7 +6,7 @@ from util import search_youtube, search_zingmp3, get_info
 
 app = Flask(__name__)
 CORS(app)
-
+fs = Storage()
 
 @app.route("/")
 def index():
@@ -68,7 +68,6 @@ def get_music_handler():
         title = request.args.get("title")
     db = Db()
     audio = db.get_audio(title)
-    fs = Storage()
     audio_url = fs.get(title)
     db.close()
     return jsonify(
@@ -114,7 +113,6 @@ def save_zingmp3():
     db = Db()
     if not db.get_audio(title):
         db.add_audio(title, url, artist, cover, lrc)
-    fs = Storage()
     if not fs.exists(title):
         fs.put(title, url)
     db.add_album(album, title)
@@ -142,7 +140,6 @@ def save_youtube():
     db = Db()
     if not db.get_audio(title):
         db.add_audio(title, link, artist, cover)
-    fs = Storage()
     if not fs.exists(title):
         fs.put(title, url)
     db.add_album(album, title)
