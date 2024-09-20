@@ -80,9 +80,11 @@ export default function App() {
         body: JSON.stringify({ query: query }),
       });
     }
+    
     const results = await req.json();
     setSearchResults(results);
     setActiveNavItem("Tìm Kiếm");
+    inputRef.current.value = query;
   }
 
   return (
