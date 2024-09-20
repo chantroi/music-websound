@@ -33,7 +33,7 @@ class AlbumAudio(Base):
 class Db:
     def __init__(self):
         self.engine = create_engine(
-            DB_URL, connect_args={"check_same_thread": False}, echo=True
+            DB_URL, connect_args={"check_same_thread": False}, echo=True, pool_pre_ping=True
         )
         Base.metadata.create_all(self.engine)
         self.session = sessionmaker(bind=self.engine)()

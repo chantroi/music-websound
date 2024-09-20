@@ -7,7 +7,7 @@ from util import search_youtube, search_zingmp3, get_info
 app = Flask(__name__)
 CORS(app)
 fs = Storage()
-
+db = Db()
 @app.route("/")
 def index():
     return jsonify(status="ok", message="API is running")
@@ -23,20 +23,16 @@ def create_album_handler():
         title = request.args.get("title")
         author = request.args.get("author")
         des = request.args.get("des")
-    db = Db()
     db.create_album(title, author, des)
-    db.close()
     return jsonify(status="ok", message="Album created")
 
 
 @app.route("/albums", methods=["POST", "GET"])
 def list_albums_handler():
-    db = Db()
     albums = db.list_albums()
     albums = [
         {"title": item.title, "author": item.author, "des": item.des} for item in albums
     ]
-    db.close()
     return jsonify(albums)
 
 
@@ -66,10 +62,8 @@ def get_music_handler():
         title = request.json.get("title")
     else:
         title = request.args.get("title")
-    db = Db()
     audio = db.get_audio(title)
     audio_url = fs.get(title)
-    db.close()
     return jsonify(
         title=title,
         url=audio_url,
@@ -85,12 +79,10 @@ def get_album_handler():
         album = request.json.get("album")
     else:
         album = request.args.get("album")
-    db = Db()
     if album:
         audios = [item.audio for item in db.get_album(album)]
     else:
         audios = [item.audio for item in db.get_album()]
-    db.close()
     return jsonify(audios)
 
 
@@ -110,13 +102,11 @@ def save_zingmp3():
     url = info["url"]
     cover = info["thumbnails"][0]["url"]
     lrc = info["subtitles"]["origin"][0]["url"]
-    db = Db()
     if not db.get_audio(title):
         db.add_audio(title, url, artist, cover, lrc)
     if not fs.exists(title):
         fs.put(title, url)
     db.add_album(album, title)
-    db.close()
     return jsonify(
         platform="zingmp3", title=title, url=url, cover=cover, artist=artist, lrc=lrc
     )
@@ -137,13 +127,11 @@ def save_youtube():
     title = info["title"]
     cover = info["thumbnail"]
     artist = info["channel"]
-    db = Db()
     if not db.get_audio(title):
         db.add_audio(title, link, artist, cover)
     if not fs.exists(title):
         fs.put(title, url)
     db.add_album(album, title)
-    db.close()
     return jsonify(
         platform="youtube", title=title, url=url, cover=cover, artist=artist, lrc=None
     )
