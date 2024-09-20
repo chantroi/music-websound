@@ -43,9 +43,13 @@ export default function App() {
       const response = await fetch(apiLink);
       const data = await response.json();
       for (const item of data) {
-        const audioResponse = await fetch(
-          `https://serverdash.serv00.net/get?title=${item}`
-        );
+        const audioResponse = await fetch("https://serverdash.serv00.net/get", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ title: item.title }),
+        });
         const audioData = await audioResponse.json();
         if (!audioList.includes(audioData)) {
           setAudioList((audioList) => [...audioList, audioData]);
@@ -80,7 +84,7 @@ export default function App() {
         body: JSON.stringify({ query: query }),
       });
     }
-    
+
     const results = await req.json();
     setSearchResults(results);
     setActiveNavItem("Tìm Kiếm");

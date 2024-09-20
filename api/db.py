@@ -52,12 +52,9 @@ class Db:
         return self.session.query(Album).all()
 
     def add_audio(self, title, url, artist, cover, lrc=None):
-        if lrc:
-            self.session.add(
+        self.session.merge(
                 Audio(title=title, url=url, artist=artist, cover=cover, lrc=lrc)
             )
-        else:
-            self.session.add(Audio(title=title, url=url, artist=artist, cover=cover))
         self.session.commit()
 
     def add_album(self, album, audio):
