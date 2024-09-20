@@ -101,7 +101,10 @@ def save_zingmp3():
     artist = info["artist"]
     url = info["url"]
     cover = info["thumbnails"][0]["url"]
-    lrc = info["subtitles"]["origin"][0]["url"]
+    try:
+        lrc = info["subtitles"]["origin"][0]["url"]
+    except TypeError:
+        lrc = None
     if not db.get_audio(title):
         db.add_audio(title, url, artist, cover, lrc)
     if not fs.exists(title):
