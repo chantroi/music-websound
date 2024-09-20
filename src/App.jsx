@@ -127,7 +127,7 @@ export default function App() {
               placeholder="Tìm kiếm ..."
               ref={inputRef}
             />
-            <select onChange={onSearchOptionChange}>
+            <select value={searchOption} onChange={onSearchOptionChange}>
               <option value="youtube">Youtube</option>
               <option value="zingmp3">Zing Mp3</option>
             </select>
