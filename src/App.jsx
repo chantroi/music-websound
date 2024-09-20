@@ -48,7 +48,9 @@ export default function App() {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ title: item.title }),
+          body: JSON.stringify(
+            { title: item }
+          ),
         });
         const audioData = await audioResponse.json();
         if (!audioList.includes(audioData)) {
